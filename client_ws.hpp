@@ -291,13 +291,17 @@ namespace SimpleWeb {
                                     onopen();
                                 read_message(message);
                             }
-                            else
-                                throw std::invalid_argument("WebSocket handshake failed");
+                            else {
+                                handleError(boost::asio::error::connection_aborted);
+                            }
+                        } else {
+                            handleError(boost::asio::error::connection_reset);
                         }
                     });
                 }
-                else
-                    throw std::invalid_argument("Failed sending handshake");
+                else {
+                    handleError(boost::asio::error::connection_reset);
+                }
             });
         }
         
@@ -448,6 +452,16 @@ namespace SimpleWeb {
                 }
             });
         }
+
+        void handleError(const boost::system::error_code& ec) {
+            stop();
+
+            if (onerror) {
+                onerror(ec);
+            } else {
+                throw std::invalid_argument(ec.message());
+            }
+        }
     };
     
     template<class socket_type>
@@ -477,12 +491,14 @@ namespace SimpleWeb {
                             
                             handshake();
                         }
-                        else
-                            throw std::invalid_argument(ec.message());
+                        else {
+                            handleError(ec);
+                        }                        
                     });
+                } 
+                else {
+                    handleError(ec);
                 }
-                else
-                    throw std::invalid_argument(ec.message());
             });
         }
     };

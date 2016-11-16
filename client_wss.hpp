@@ -54,15 +54,15 @@ namespace SimpleWeb {
                                 if(!ec)
                                     handshake();
                                 else
-                                    throw std::invalid_argument(ec.message());
+                                    handleError(ec);
                             });
                         }
                         else
-                            throw std::invalid_argument(ec.message());
+                            handleError(ec);
                     });
                 }
                 else
-                    throw std::invalid_argument(ec.message());
+                    handleError(ec);
             });
         }
     };
