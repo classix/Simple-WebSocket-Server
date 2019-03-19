@@ -53,7 +53,7 @@ namespace SimpleWeb {
 
             std::unique_ptr<socket_type> socket;
 
-            boost::asio::strand strand;
+            boost::asio::io_service::strand strand;
 
             std::list<SendData> send_queue;
 
