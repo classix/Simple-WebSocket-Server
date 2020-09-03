@@ -41,7 +41,7 @@ namespace SimpleWeb {
             unsigned short remote_endpoint_port;
 
         private:
-            Connection(socket_type* socket): socket(socket), strand(socket->get_io_service()), closed(false) {}
+            Connection(socket_type* socket): socket(socket), strand(static_cast<boost::asio::io_service&>(socket->get_executor().context())), closed(false) {}
 
             class SendData {
             public:
