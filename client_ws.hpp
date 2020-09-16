@@ -147,9 +147,8 @@ namespace SimpleWeb {
             std::vector<unsigned char> mask;
             mask.resize(4);
             std::uniform_int_distribution<unsigned short> dist(0,255);
-            std::random_device rd;
             for(int c=0;c<4;c++) {
-                mask[c]=static_cast<unsigned char>(dist(rd));
+                mask[c]=static_cast<unsigned char>(dist(random_generator));
             }
 
             auto send_stream = std::make_shared<SendStream>();
@@ -220,8 +219,9 @@ namespace SimpleWeb {
         std::string host;
         unsigned short port;
         std::string path;
+        std::mt19937 random_generator;
 
-        SocketClientBase(const std::string& host_port_path, unsigned short default_port) : ws_magic_string("258EAFA5-E914-47DA-95CA-C5AB0DC85B11"), internal_io_service(false) {
+        SocketClientBase(const std::string& host_port_path, unsigned short default_port) : ws_magic_string("258EAFA5-E914-47DA-95CA-C5AB0DC85B11"), internal_io_service(false), random_generator(std::random_device()()) {
             size_t host_end=host_port_path.find(':');
             size_t host_port_end=host_port_path.find('/');
             if(host_end==std::string::npos) {
@@ -264,9 +264,8 @@ namespace SimpleWeb {
             std::string nonce;
             nonce.resize(16);
             std::uniform_int_distribution<unsigned short> dist(0,255);
-            std::random_device rd;
             for(int c=0;c<16;c++)
-                nonce[c]=static_cast<unsigned char>(dist(rd));
+                nonce[c]=static_cast<unsigned char>(dist(random_generator));
 
             std::string nonce_base64=Crypto::Base64::encode(nonce);
             request << "Sec-WebSocket-Key: " << nonce_base64 << "\r\n";
