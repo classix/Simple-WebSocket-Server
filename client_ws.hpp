@@ -436,7 +436,10 @@ namespace SimpleWeb {
                     else if((message->fin_rsv_opcode&0x0f)==9) {
                         //send pong
                         auto empty_send_stream=std::make_shared<SendStream>();
-                        send(empty_send_stream, nullptr, message->fin_rsv_opcode+1);
+                        // Always pass a callback, because passing nullptr leads to a crash (std::bad_function_call) in VS2012 because 
+                        // apparently the empty std::function isn't properly copied. Hold on to the connection for until the message has been send.
+                        auto kept_connection=connection;
+                        send(empty_send_stream, [kept_connection](const boost::system::error_code&){}, message->fin_rsv_opcode+1);
                     }
                     else if(onmessage) {
                         onmessage(message);
